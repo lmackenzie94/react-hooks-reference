@@ -6,7 +6,7 @@
 4. [useLayoutEffect](#uselayouteffect)
 5. [useRef](#useref)
 6. [useMemo](#usememo)
-7. [useCallback)(#usecallback)
+7. [useCallback](#usecallback)
 8. [Rules of Hooks](#rules)
 
 <br><br>
@@ -68,13 +68,13 @@ export default Counter;
 
 > Used to **manage side effects** (i.e. anything that affects something outside of the function being executed)
 
-*In short, useEffect tells React that your component needs to do something after render. React remembers the function you passed and calls it later after performing the DOM updates. The function we pass is our effect. Some common use cases include data fetching, API requests, timers, event handlers, and subscriptions.* 
+*In short, <code>useEffect</code> tells React that your component needs to do something after render. React remembers the function you passed and calls it later after performing the DOM updates. The function we pass is our effect. Some common use cases include data fetching, API requests, timers, event handlers, and subscriptions.* 
 - By default, it **executes after every render cycle**, including the first render.
 - Combines **componentDidMount, componentDidUpdate, and componentWillUnmount** into a single API.
 - Passing an empty array as the second argument makes it act like componentDidMount (i.e. only runs after the first render).
-- Adding dependencies to the array will tell React to only run the useEffect on the first render and when one of the specified dependencies has changed.
+- Adding dependencies to the array will tell React to only run the <code>useEffect</code> on the first render and when one of the specified dependencies has changed.
 - Can be used multiple times within the same component.
-- React defers running useEffect until after the browser has painted, so doing extra work is less of a problem because it won’t block the browser.
+- React defers running <code>useEffect</code> until after the browser has painted, so doing extra work is less of a problem because it won’t block the browser.
 
 > TIP: Use multiple effects to separate concerns
 
@@ -88,7 +88,7 @@ useEffect(() => {
 // [count] tells React to skip applying the effect if the value of 'count' hasn't changed between re-renders.
 ```
 
-> The dependency array should contain any values (data, variables, etc) defined within your component that are used inside the useEffect. However, the "setter" function returned from useState ('setCount' from the example above) can always be omitted as React ensures it won't change.
+> The dependency array should contain any values (data, variables, etc) defined within your component that are used inside the <code>useEffect</code>. However, the "setter" function returned from <code>useState</code> ('setCount' from the example above) can always be omitted as React ensures it won't change.
 
 **CLEANUP EXAMPLE:**
 - important to prevent memory leaks.
@@ -116,3 +116,19 @@ function Form() {
     - if you don't, your code will reference stale values from previous renders.
 - to run an effect and clean it up only once (on mount and unmount), you can pass an empty array ([]) as a second argument. This tells React that your effect doesn’t depend on any values from props or state, so it never needs to re-run.
     - passing an empty array means the props and state inside the effect will always have their initial values.
+    
+<br><br>
+
+<a name="uselayouteffect"></a>
+
+### useLayoutEffect()
+
+> USE CASE: if your effect is mutating the DOM (via a DOM node ref) **and** the DOM mutation will change the appearance of the DOM node between the time that it is rendered and your effect mutates it. Using <code>useEffect</code> could result in a flicker when your DOM mutations take effect.
+> TIP: always use <code>useEffect</code> when possible to avoid blocking visual updates.
+
+- identical to <code>useEffect</code>, but fires *synchronously* after all DOM mutations.
+- used to read layout from the DOM and synchronously re-render.
+- your code runs immediately after the DOM has been updated, but before the browser has had a chance to "paint" those changes (the user doesn't actually see the updates until after the browser has repainted).
+- can be useful if you need to make DOM measurements (like getting the scroll position or other styles for an element) and then make DOM mutations or trigger a synchronous re-render by updating state.
+
+[useEffect() example - render flash](https://codesandbox.io/s/useeffect-flash-on-render-yluoi) **vs.** [useLayoutEffect example - no flash](https://codesandbox.io/s/uselayouteffect-no-flash-ylyyg?file=/src/index.js)
