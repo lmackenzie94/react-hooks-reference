@@ -4,10 +4,11 @@
 2. [useState](#usestate)
 3. [useEffect](#useeffect)
 4. [useLayoutEffect](#uselayouteffect)
-5. [useRef](#useref)
-6. [useMemo](#usememo)
-7. [useCallback](#usecallback)
-8. [Rules of Hooks](#rules)
+5. [useContext](#usecontext)
+6. [useRef](#useref)
+7. [useMemo](#usememo)
+8. [useCallback](#usecallback)
+9. [Rules of Hooks](#rules)
 
 <br><br>
 
@@ -132,3 +133,58 @@ function Form() {
 - can be useful if you need to make DOM measurements (like getting the scroll position or other styles for an element) and then make DOM mutations or trigger a synchronous re-render by updating state.
 
 [useEffect() example - render flash](https://codesandbox.io/s/useeffect-flash-on-render-yluoi) **vs.** [useLayoutEffect example - no flash](https://codesandbox.io/s/uselayouteffect-no-flash-ylyyg?file=/src/index.js)
+
+<br><br>
+
+<a name="usecontext"></a>
+
+### useContext()
+
+- **accepts a context object** (i.e. the value returned from <code>React.createContext</code>)
+- **returns the current context value** for that context.
+    - which is determined by the <code>value</code> prop of the nearest <code><MyContext.Provider></code> above calling component in the tree.
+- a component calling <code>useContext</code> will always re-render when the context value changes. If re-rendering the component is expensive, you can optimize it by using memoization.
+- only lets you *read* the context and subscribe to its changes. You still need a <code><MyContext.Provider></code> above in the tree to *provide* the value for this context.
+  
+**EXAMPLE:**
+
+```javascript
+const themes = {
+  light: {
+    foreground: "#000000",
+    background: "#eeeeee"
+  },
+  dark: {
+    foreground: "#ffffff",
+    background: "#222222"
+  }
+};
+
+const ThemeContext = React.createContext(themes.light);
+
+function App() {
+  return (
+    <ThemeContext.Provider value={themes.dark}>
+      <Toolbar />
+    </ThemeContext.Provider>
+  );
+}
+
+function Toolbar(props) {
+  return (
+    <div>
+      <ThemedButton />
+    </div>
+  );
+}
+
+function ThemedButton() {
+  const theme = useContext(ThemeContext);
+  return (
+    <button style={{ background: theme.background, color: theme.foreground }}>
+      I am styled by theme context!
+    </button>
+  );
+}
+```
+
